@@ -1,10 +1,17 @@
 // TODO: Fix the compiler error on this function.
 fn picky_eater(food: &str) -> &str {
-    if food == "strawberry" {
-        "Yummy!"
-    } else {
-        1
+    const NEUTRAL_RESPONSE: &str = "I guess I can eat that.";
+    const NEGATIVE_RESPONSE: &str = "No thanks!";
+    match food {
+        "strawberry" => "Yummy!",
+        "potato" => NEUTRAL_RESPONSE,
+        _ => NEGATIVE_RESPONSE
     }
+    // if food == "strawberry" {
+    //     "Yummy!"
+    // } else {
+        
+    // }
 }
 
 fn main() {
