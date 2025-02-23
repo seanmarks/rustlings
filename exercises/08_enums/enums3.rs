@@ -8,7 +8,33 @@ enum Message {
     Move(Point),
     Echo(String),
     ChangeColor(u8, u8, u8),
+    Open { authority: String, url: String },
     Quit,
+    Draw(draw::Line),
+}
+
+mod draw {
+
+    use crate::Point;
+
+    pub struct Line {
+        begin: Point,
+        end: Point
+    }
+
+    impl Line {
+        pub fn new(begin: Point, end: Point) -> Line {
+            Line { begin, end }
+        }
+
+        pub fn length(&self) -> f64 {
+            let delta_sq = |x1, x2| { (x1 - x2)*(x1 - x2) };
+            let dx = delta_sq(self.begin.x, self.end.x) as f64;
+            let dy = delta_sq(self.begin.y, self.end.y) as f64;
+            f64::sqrt(dx*dx + dy*dy)
+            // ((dx*dx + dy*dy) as f64).sqrt()
+        }
+    }
 }
 
 struct State {
@@ -44,8 +70,15 @@ impl State {
     }
 
     fn process(&mut self, message: Message) {
-        // TODO: Create a match expression to process the different message
-        // variants using the methods defined above.
+        match message {
+            Message::Resize { width, height } => self.resize(width, height),
+            Message::Move(point) => self.move_position(point),
+            Message::Echo(text) => self.echo(text),
+            Message::ChangeColor(red, green, blue) => self.change_color(red, green, blue),
+            Message::Open { url, .. } => println!("Opening {url}"),  // don't expand all fields
+            Message::Quit => self.quit(),
+            _ => ()
+        }
     }
 }
 
