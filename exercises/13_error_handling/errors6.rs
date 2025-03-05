@@ -4,7 +4,9 @@
 // a custom error type to make it possible for callers to decide what to do next
 // when our function returns an error.
 
+use std::fmt;
 use std::num::ParseIntError;
+use std::error::Error;
 
 #[derive(PartialEq, Debug)]
 enum CreationError {
@@ -19,6 +21,7 @@ enum ParsePosNonzeroError {
     ParseInt(ParseIntError),
 }
 
+//-----------------------------------------------------------------------------
 impl ParsePosNonzeroError {
     fn from_creation(err: CreationError) -> Self {
         Self::Creation(err)
@@ -41,6 +44,21 @@ impl From<ParseIntError> for ParsePosNonzeroError {
     }
 }
 
+//-----------------------------------------------------------------------------
+impl fmt::Display for CreationError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let description = match *self {
+            CreationError::Negative => "number is negative",
+            CreationError::Zero => "number is zero",
+        };
+        f.write_str(description)
+    }
+}
+impl Error for CreationError{}
+
+// impl fmt::Display for ParsePosNonzeroError {}
+
+//-----------------------------------------------------------------------------
 #[derive(PartialEq, Debug)]
 struct PositiveNonzeroInteger(u64);
 
@@ -54,11 +72,12 @@ impl PositiveNonzeroInteger {
     }
 
     fn parse(s: &str) -> Result<Self, ParsePosNonzeroError> {
-        let pos = Self::new(s.parse()?)?;
-        Ok(pos)
+        s.parse::<i64>().map_err(ParsePosNonzeroError::ParseInt)
+          .and_then(|x| { Self::new(x).map_err(ParsePosNonzeroError::Creation) })
     }
 }
 
+//-----------------------------------------------------------------------------
 fn main() {
     // You can optionally experiment here.
 }
