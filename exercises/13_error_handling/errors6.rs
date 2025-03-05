@@ -72,8 +72,11 @@ impl PositiveNonzeroInteger {
     }
 
     fn parse(s: &str) -> Result<Self, ParsePosNonzeroError> {
-        s.parse::<i64>().map_err(Into::<ParsePosNonzeroError>::into)
-          .and_then(|x| { Self::new(x).map_err(Into::<ParsePosNonzeroError>::into) })
+        let x = s.parse()?;
+        // Self::new( s.parse()? )?
+        Self::new(x).map_err(Into::into)
+        // s.parse::<i64>().map_err(Into::<ParsePosNonzeroError>::into)
+        //   .and_then(|x| { Self::new(x).map_err(Into::<ParsePosNonzeroError>::into) })
     }
 }
 
