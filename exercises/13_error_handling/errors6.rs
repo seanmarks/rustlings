@@ -54,8 +54,7 @@ impl PositiveNonzeroInteger {
     }
 
     fn parse(s: &str) -> Result<Self, ParsePosNonzeroError> {
-        let x: i64 = s.parse()?;
-        let pos = Self::new(x)?;
+        let pos = Self::new(s.parse()?)?;
         Ok(pos)
     }
 }
