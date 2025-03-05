@@ -2,4 +2,4 @@ Cargo.lock
 target/
 .vscode/
 .rustlings-state.txt
-solutions/
+solutions/**
