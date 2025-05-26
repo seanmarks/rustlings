@@ -4,7 +4,7 @@
 // number of exercises with a given progress. Recreate this counting
 // functionality using iterators. Try to not use imperative loops (for/while).
 
-use std::collections::HashMap;
+use std::collections::{hash_map, HashMap};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Progress {
@@ -26,8 +26,7 @@ fn count_for(map: &HashMap<String, Progress>, value: Progress) -> usize {
 // TODO: Implement the functionality of `count_for` but with an iterator instead
 // of a `for` loop.
 fn count_iterator(map: &HashMap<String, Progress>, value: Progress) -> usize {
-    // `map` is a hash map with `String` keys and `Progress` values.
-    // map = { "variables1": Complete, "from_str": None, … }
+    map.iter().filter(|p| *p.1 == value).count()
 }
 
 fn count_collection_for(collection: &[HashMap<String, Progress>], value: Progress) -> usize {
@@ -48,10 +47,44 @@ fn count_collection_iterator(collection: &[HashMap<String, Progress>], value: Pr
     // `collection` is a slice of hash maps.
     // collection = [{ "variables1": Complete, "from_str": None, … },
     //               { "variables2": Complete, … }, … ]
+
+    // (1) using the previously created function
+    // collection.iter().map(|m| count_iterator(m, value)).sum()
+
+    // (2) using flat_map()
+    collection.iter()
+        .flat_map(|f| f.iter())
+        .filter(|p| *p.1 == value)
+        .count()
 }
 
+type ProgressSummary = HashMap::<String, Progress>;
 fn main() {
     // You can optionally experiment here.
+    let mut collection: Vec<ProgressSummary> = vec![
+        ProgressSummary::from([
+            ("One".into(), Progress::Complete),
+        ]),
+        ProgressSummary::from([
+            ("Two".into(), Progress::Complete),
+            ("Three".into(), Progress::Some),
+        ]),
+        ProgressSummary::from([
+            ("Four".into(), Progress::None),
+            ("Five".into(), Progress::None),
+        ]),
+    ];
+    collection.push(ProgressSummary::new());
+
+    println!("{}", count_collection_iterator(collection.as_slice(), Progress::None));
+    println!("{}", count_collection_iterator(collection.as_slice(), Progress::Some));
+    println!("{}", count_collection_iterator(collection.as_slice(), Progress::Complete));
+
+    let it = collection.iter()
+        .flat_map(|f| f.iter())
+        .filter(|p| *p.1 == Progress::Complete);
+    println!("{}", it.count())
+
 }
 
 #[cfg(test)]
